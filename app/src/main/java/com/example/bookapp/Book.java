@@ -7,6 +7,7 @@ public class Book {
     String price;
     String writer;
     String image;
+    float avgRating;
 
     public Book(String bookId, String name, String price, String writer,String image) {
         this.bookId = bookId;
@@ -16,6 +17,14 @@ public class Book {
         this.image = image;
 
 
+    }
+
+    public float getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(float avgRating) {
+        this.avgRating = avgRating;
     }
 
     public Book() {

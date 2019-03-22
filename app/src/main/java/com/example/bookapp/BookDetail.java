@@ -1,12 +1,19 @@
 package com.example.bookapp;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,28 +23,102 @@ import com.google.firebase.database.ValueEventListener;
 public class BookDetail extends AppCompatActivity {
 
     FirebaseDatabase database;
-    DatabaseReference reference;
+    DatabaseReference Bookreference;
+    DatabaseReference Usersreference;
+    FirebaseAuth auth;
     ImageView image;
     TextView name;
+    Button rate_btn;
+    float rating;
+    RatingBar ratingBar;
+    float average;
+    int count = 0;
+    float totalRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
 
-        image=findViewById(R.id.detail_image);
-        name=findViewById(R.id.detail_name);
+        image = findViewById(R.id.detail_image);
+        name = findViewById(R.id.detail_name);
+        rate_btn = findViewById(R.id.rate_btn);
+        ratingBar = findViewById(R.id.rating);
 
-        Bundle bundle=getIntent().getExtras();
-        final String bookId=bundle.getString("bookId");
+        auth = FirebaseAuth.getInstance();
 
-        database=FirebaseDatabase.getInstance();
-        reference=database.getReference("books").child(bookId);
 
-        reference.addValueEventListener(new ValueEventListener() {
+        Bundle bundle = getIntent().getExtras();
+        final String bookId = bundle.getString("bookId");
+
+        database = FirebaseDatabase.getInstance();
+        Bookreference = database.getReference("books").child(bookId);
+        Usersreference = database.getReference("users").child(auth.getCurrentUser().getUid());
+
+
+        rate_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rating = ratingBar.getRating();
+
+                Usersreference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        User user = dataSnapshot.getValue(User.class);
+                        String uid = user.getUid();
+                        String uname = user.getName();
+
+                        BookRating bookRating = new BookRating(uid, uname, rating);
+                        Bookreference.child("bookRating").child(uid).setValue(bookRating);
+
+                        Bookreference.child("bookRating").addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                BookRating bookRating1 = dataSnapshot.getValue(BookRating.class);
+                                totalRating += bookRating1.getRating();
+                                count++;
+                                average = totalRating / count;
+
+                                Bookreference.child("avgRating").setValue(average);
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+
+        Bookreference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Book book=dataSnapshot.getValue(Book.class);
+                Book book = dataSnapshot.getValue(Book.class);
                 name.setText(book.getName());
                 Glide.with(BookDetail.this).load(book.getImage()).into(image);
             }
@@ -47,5 +128,11 @@ public class BookDetail extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void logout(View view) {
+
+        auth.signOut();
+        startActivity(new Intent(this, MainActivity.class));
     }
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -58,6 +59,10 @@ public class SignUp extends AppCompatActivity {
                     user=auth.getCurrentUser();
                     saveData(name,email,pass,user.getUid());
                 }
+
+                else {
+                    Toast.makeText(SignUp.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -66,7 +71,7 @@ public class SignUp extends AppCompatActivity {
 
         User user=new User(name,uid,email,pass);
         userREf.child(uid).setValue(user);
-        startActivity(new Intent(this,AddBook.class));
+        startActivity(new Intent(this,BookList.class));
     }
 
     private void init() {
