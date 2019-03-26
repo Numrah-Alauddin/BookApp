@@ -72,6 +72,9 @@ public class BookDetail extends AppCompatActivity {
                         BookRating bookRating = new BookRating(uid, uname, rating);
                         Bookreference.child("bookRating").child(uid).setValue(bookRating);
 
+
+                        //average
+
                         Bookreference.child("bookRating").addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
