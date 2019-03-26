@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         init();
 
         if(user!=null){
-            startActivity(new Intent(this,AddBook.class));
+            startActivity(new Intent(this,BookList.class));
         }
 
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     user=auth.getCurrentUser();
-                    startActivity(new Intent(MainActivity.this,AddBook.class));
+                    startActivity(new Intent(MainActivity.this,BookList.class));
                 }
             }
         });
