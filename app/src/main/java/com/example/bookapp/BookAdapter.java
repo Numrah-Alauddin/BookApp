@@ -55,6 +55,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookViewHolder> {
                 float avg=dataSnapshot.child("avgRating").getValue(Float.class);
                 bookViewHolder.price.setText(decimalFormat.format(avg));
 
+                bookViewHolder.view.setText(String.valueOf(dataSnapshot.child("viewCount").getValue(Long.class)));
+
             }
 
             @Override

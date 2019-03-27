@@ -71,7 +71,7 @@ public class SignUp extends AppCompatActivity {
 
         User user=new User(name,uid,email,pass);
         userREf.child(uid).setValue(user);
-        startActivity(new Intent(this,AddBook.class));
+        startActivity(new Intent(this,BookList.class));
     }
 
     private void init() {

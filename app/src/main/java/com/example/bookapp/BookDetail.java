@@ -25,6 +25,7 @@ public class BookDetail extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference Bookreference;
     DatabaseReference Usersreference;
+    DatabaseReference viewRef;
     FirebaseAuth auth;
     ImageView image;
     TextView name;
@@ -53,6 +54,7 @@ public class BookDetail extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         Bookreference = database.getReference("books").child(bookId);
+        viewRef = database.getReference("books").child(bookId).child("views");
         Usersreference = database.getReference("users").child(auth.getCurrentUser().getUid());
 
 
@@ -124,6 +126,34 @@ public class BookDetail extends AppCompatActivity {
                 Book book = dataSnapshot.getValue(Book.class);
                 name.setText(book.getName());
                 Glide.with(BookDetail.this).load(book.getImage()).into(image);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        viewRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                long viewCount=dataSnapshot.getChildrenCount();
+
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    if (data.getValue().equals(auth.getCurrentUser().getUid())){
+                        Bookreference.child("viewCount").setValue(viewCount);
+                        return;
+                    }
+
+                }
+
+                viewRef.push().setValue(auth.getCurrentUser().getUid());
+                Bookreference.child("viewCount").setValue(viewCount);
+              //  viewRef.push().setValue(auth.getCurrentUser().getUid());
+
             }
 
             @Override

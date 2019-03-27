@@ -12,6 +12,7 @@ public class BookViewHolder extends RecyclerView.ViewHolder {
     ImageView image;
     TextView name;
     TextView price;
+    TextView view;
 
     public BookViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -19,5 +20,6 @@ public class BookViewHolder extends RecyclerView.ViewHolder {
         image=itemView.findViewById(R.id.book_item_image);
         name=itemView.findViewById(R.id.book_item_name);
         price=itemView.findViewById(R.id.book_item_price);
+        view=itemView.findViewById(R.id.book_views);
     }
 }
