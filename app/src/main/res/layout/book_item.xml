@@ -38,8 +38,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/book_item_image"
-                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@id/book_item_name"
                 android:text="Price"
+                android:layout_marginStart="20dp"
                 android:textSize="20sp" />
 
             <TextView
@@ -50,6 +51,15 @@
                 android:layout_centerHorizontal="true"
                 android:text="Views"
                 android:textSize="20sp" />
+            <ImageView
+                android:id="@+id/img_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_more_vert_black_24dp"
+
+                android:layout_below="@id/book_item_image"
+                android:layout_alignParentEnd="true"
+                />
 
         </RelativeLayout>
 

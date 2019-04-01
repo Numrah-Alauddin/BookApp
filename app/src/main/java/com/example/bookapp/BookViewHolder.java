@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class BookViewHolder extends RecyclerView.ViewHolder {
-
+ImageView img_menu;
     ImageView image;
     TextView name;
     TextView price;
@@ -18,6 +18,7 @@ public class BookViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         image=itemView.findViewById(R.id.book_item_image);
+        img_menu=itemView.findViewById(R.id.img_menu);
         name=itemView.findViewById(R.id.book_item_name);
         price=itemView.findViewById(R.id.book_item_price);
         view=itemView.findViewById(R.id.book_views);

@@ -6,8 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -35,24 +39,24 @@ public class BookAdapter extends RecyclerView.Adapter<BookViewHolder> {
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        View view= LayoutInflater.from(context).inflate(R.layout.book_item,viewGroup,false);
-        BookViewHolder bookViewHolder=new BookViewHolder(view);
+        View view = LayoutInflater.from(context).inflate(R.layout.book_item, viewGroup, false);
+        BookViewHolder bookViewHolder = new BookViewHolder(view);
         return bookViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final BookViewHolder bookViewHolder, int i) {
 
-        final Book book=books.get(i);
-        database=FirebaseDatabase.getInstance();
-        reference=database.getReference().child("books").child(book.getBookId());
+        final Book book = books.get(i);
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference().child("books").child(book.getBookId());
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                DecimalFormat decimalFormat=new DecimalFormat("#.#");
-                float avg=dataSnapshot.child("avgRating").getValue(Float.class);
+                DecimalFormat decimalFormat = new DecimalFormat("#.#");
+                float avg = dataSnapshot.child("avgRating").getValue(Float.class);
                 bookViewHolder.price.setText(decimalFormat.format(avg));
 
                 bookViewHolder.view.setText(String.valueOf(dataSnapshot.child("viewCount").getValue(Long.class)));
@@ -66,7 +70,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookViewHolder> {
         });
 
 
-
         bookViewHolder.name.setText(book.getName());
 
 
@@ -74,13 +77,53 @@ public class BookAdapter extends RecyclerView.Adapter<BookViewHolder> {
         bookViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle=new Bundle();
-                bundle.putString("bookId",book.getBookId());
-                Intent intent=new Intent(context,BookDetail.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("bookId", book.getBookId());
+                Intent intent = new Intent(context, BookDetail.class);
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
         });
+        bookViewHolder.img_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showpopupmenu(bookViewHolder.img_menu,book.getBookId());
+            }
+        });
+    }
+
+    private void showpopupmenu(ImageView img_menu, final String bookId) {
+        PopupMenu popupMenu = new PopupMenu(context, img_menu);
+        MenuInflater menuInflater = popupMenu.getMenuInflater();
+        menuInflater.inflate(R.menu.edit, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.edit_menu:
+                        update(bookId);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        popupMenu.show();
+
+    }
+
+    private void update(String bookId) {
+
+
+        Intent intent=new Intent(context,AddBook.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("bookId",bookId);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+
+
 
     }
 
